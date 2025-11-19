@@ -240,6 +240,15 @@ if __name__ == "__main__":
             prosody_features = extract_speech_prosody(scaled, audio_sr, window_length=win_length, frame_shift=frame_shift)
             mel_spectrogram = extract_mel_spectrogram(scaled_int16, audio_sr, window_length=win_length, frame_shift=frame_shift)
 
+            # Ensure all features have the same number of windows by trimming to the minimum
+            min_windows = min(wavelet_features.shape[0], prosody_features.shape[0], mel_spectrogram.shape[0])
+            print(f"  Original shapes - Wavelet: {wavelet_features.shape[0]}, Prosody: {prosody_features.shape[0]}, Mel: {mel_spectrogram.shape[0]}")
+            print(f"  Trimming all features to {min_windows} windows")
+
+            wavelet_features = wavelet_features[:min_windows]
+            prosody_features = prosody_features[:min_windows]
+            mel_spectrogram = mel_spectrogram[:min_windows]
+
             # Combine features
             combined_features = np.concatenate((wavelet_features.reshape(wavelet_features.shape[0], -1), prosody_features), axis=1)
 
